@@ -1,4 +1,5 @@
-const STORAGE_KEY = "soudanTyoboRecords";
+const STORAGE_KEY = "soudan_tyobo_records";
+const LEGACY_STORAGE_KEY = "soudanTyoboRecords";
 
 const form = document.getElementById("record-form");
 const inventoryBody = document.getElementById("inventory-body");
@@ -10,7 +11,7 @@ function generateId() {
 }
 
 function loadRecords() {
-  const raw = localStorage.getItem(STORAGE_KEY);
+  const raw = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY);
   if (!raw) return [];
 
   try {

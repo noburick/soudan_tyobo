@@ -33,10 +33,10 @@
 
 ## ファイル構成
 
-- `/home/runner/work/soudan_tyobo/soudan_tyobo/index.html` : 画面構成
-- `/home/runner/work/soudan_tyobo/soudan_tyobo/style.css` : スタイル（ダークテーマ/レスポンシブ）
-- `/home/runner/work/soudan_tyobo/soudan_tyobo/script.js` : データ処理・描画・CSV出力
-- `/home/runner/work/soudan_tyobo/soudan_tyobo/README.md` : 本ドキュメント
+- `index.html` : 画面構成
+- `style.css` : スタイル（ダークテーマ/レスポンシブ）
+- `script.js` : データ処理・描画・CSV出力
+- `README.md` : 本ドキュメント
 
 ---
 
