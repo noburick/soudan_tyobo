@@ -67,7 +67,7 @@
 
 ## データ保存仕様（localStorage）
 
-- キー名: `soudanTyoboRecords`
+- キー名: `soudan_tyobo_records`（旧キー `soudanTyoboRecords` からの読み込み互換あり）
 - 形式: JSON配列
 - 1件の記録例（概念）
   - `id`: 一意ID

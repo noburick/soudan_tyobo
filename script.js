@@ -1,4 +1,4 @@
-const STORAGE_KEY = "soudan_tyobo_records";
+const CURRENT_STORAGE_KEY = "soudan_tyobo_records";
 const LEGACY_STORAGE_KEY = "soudanTyoboRecords";
 
 const form = document.getElementById("record-form");
@@ -11,7 +11,7 @@ function generateId() {
 }
 
 function loadRecords() {
-  const raw = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY);
+  const raw = localStorage.getItem(CURRENT_STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY);
   if (!raw) return [];
 
   try {
@@ -24,7 +24,7 @@ function loadRecords() {
 }
 
 function saveRecords(records) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+  localStorage.setItem(CURRENT_STORAGE_KEY, JSON.stringify(records));
 }
 
 function addRecord(record) {
@@ -43,7 +43,7 @@ function getTypeLabel(type) {
 }
 
 function createAmmoKey(record) {
-  return [record.ammoName, record.caliber, record.shotSize, record.grams].join("|");
+  return JSON.stringify([record.ammoName, record.caliber, record.shotSize, record.grams]);
 }
 
 function calculateInventory(records) {
@@ -193,7 +193,10 @@ form.addEventListener("submit", (event) => {
     memo: String(formData.get("memo") || "").trim(),
   };
 
-  if (!record.date || !record.ammoName || !record.caliber || !record.shotSize || Number.isNaN(record.grams) || record.grams < 0) {
+  const hasRequiredTextFields = Boolean(record.date && record.ammoName && record.caliber && record.shotSize);
+  const hasValidGrams = !Number.isNaN(record.grams) && record.grams >= 0;
+
+  if (!hasRequiredTextFields || !hasValidGrams) {
     alert("必須項目を正しく入力してください。");
     return;
   }
