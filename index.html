@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>装弾帳簿 | soudan_tyobo</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header class="panel">
+        <h1>装弾帳簿</h1>
+        <p class="subtitle">散弾の購入・使用・残数を素早く管理</p>
+      </header>
+
+      <section class="panel">
+        <h2>記録を追加</h2>
+        <form id="record-form" class="record-form">
+          <label>
+            日付
+            <input type="date" id="date" name="date" required />
+          </label>
+          <label>
+            装弾名
+            <input type="text" id="ammoName" name="ammoName" placeholder="例: フィールドロード" required />
+          </label>
+          <label>
+            口径
+            <input type="text" id="caliber" name="caliber" placeholder="例: 12番" required />
+          </label>
+          <label>
+            号数
+            <input type="text" id="shotSize" name="shotSize" placeholder="例: 7.5号" required />
+          </label>
+          <label>
+            グラム数
+            <input type="number" id="grams" name="grams" min="0" step="0.1" placeholder="例: 24" required />
+          </label>
+          <label>
+            区分
+            <select id="type" name="type" required>
+              <option value="purchase">購入</option>
+              <option value="use">使用</option>
+            </select>
+          </label>
+          <label>
+            数量
+            <input type="number" id="quantity" name="quantity" min="1" step="1" required />
+          </label>
+          <label class="full">
+            用途・メモ
+            <textarea id="memo" name="memo" rows="2" placeholder="例: クレー練習 1R"></textarea>
+          </label>
+          <button type="submit" class="btn btn-primary full">記録を追加</button>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title-row">
+          <h2>現在在庫</h2>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>装弾名</th>
+                <th>口径</th>
+                <th>号数</th>
+                <th>g</th>
+                <th>残数</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-title-row">
+          <h2>履歴</h2>
+          <button id="export-csv" class="btn">CSVエクスポート</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>日付</th>
+                <th>装弾名</th>
+                <th>口径</th>
+                <th>号数</th>
+                <th>g</th>
+                <th>区分</th>
+                <th>数量</th>
+                <th>メモ</th>
+                <th>削除</th>
+              </tr>
+            </thead>
+            <tbody id="history-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
