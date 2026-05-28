@@ -157,4 +157,59 @@ td {
     flex-direction: column;
     align-items: stretch;
   }
+
+  .table-wrap {
+    overflow-x: visible;
+  }
+
+  .responsive-table {
+    min-width: 0;
+  }
+
+  .responsive-table thead {
+    display: none;
+  }
+
+  .responsive-table tbody,
+  .responsive-table tr,
+  .responsive-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .responsive-table tr {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+
+  .responsive-table td {
+    border-bottom: 1px solid var(--line);
+    padding: 8px 10px;
+    white-space: normal;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .responsive-table td::before {
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: 0.82rem;
+    flex-shrink: 0;
+  }
+
+  .responsive-table td:last-child {
+    border-bottom: 0;
+  }
+
+  .responsive-table td.empty {
+    display: block;
+    border-bottom: 0;
+  }
+
+  .responsive-table td.empty::before {
+    content: none;
+  }
 }

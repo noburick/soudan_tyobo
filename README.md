@@ -12,6 +12,7 @@
 
 - 購入記録追加
 - 使用記録追加
+- 装弾種類マスタ登録（登録済みから選択可）
 - 現在在庫の自動計算
 - 履歴表示
 - 履歴削除
@@ -67,7 +68,12 @@
 
 ## データ保存仕様（localStorage）
 
-- キー名: `soudan_tyobo_records`（旧キー `soudanTyoboRecords` からの読み込み互換あり）
+- キー名:
+  - 記帳データ: `soudan_tyobo_records`（旧キー `soudanTyoboRecords` からの読み込み互換あり）
+  - 装弾種類マスタ: `soudan_tyobo_ammo_types`
+- バックアップキー:
+  - `soudan_tyobo_records_backup`
+  - `soudan_tyobo_ammo_types_backup`
 - 形式: JSON配列
 - 1件の記録例（概念）
   - `id`: 一意ID
