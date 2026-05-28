@@ -3,6 +3,7 @@ const LEGACY_STORAGE_KEY = "soudanTyoboRecords";
 const RECORDS_BACKUP_KEY = "soudan_tyobo_records_backup";
 const AMMO_TYPES_STORAGE_KEY = "soudan_tyobo_ammo_types";
 const AMMO_TYPES_BACKUP_KEY = "soudan_tyobo_ammo_types_backup";
+const GRAMS_COMPARISON_EPSILON = 0.01;
 
 const form = document.getElementById("record-form");
 const ammoTypeForm = document.getElementById("ammo-type-form");
@@ -24,6 +25,10 @@ function parseStoredArray(raw) {
     return Array.isArray(parsed) ? parsed : null;
   } catch (error) {
     return null;
+  }
+
+  function isValidGrams(value) {
+    return !Number.isNaN(value) && value >= 0.1;
   }
 }
 
@@ -71,7 +76,29 @@ function deleteRecord(recordId) {
 }
 
 function loadAmmoTypes() {
-  return loadArrayWithBackup(AMMO_TYPES_STORAGE_KEY, AMMO_TYPES_BACKUP_KEY);
+  const loaded = loadArrayWithBackup(AMMO_TYPES_STORAGE_KEY, AMMO_TYPES_BACKUP_KEY, null);
+  const normalized = loaded
+    .map((item) => ({
+      id: String(item.id || ""),
+      ammoName: String(item.ammoName || "").trim(),
+      caliber: String(item.caliber || "").trim(),
+      shotSize: String(item.shotSize || "").trim(),
+      grams: Number(item.grams),
+    }))
+    .filter(
+      (item) =>
+        item.id &&
+        item.ammoName &&
+        item.caliber &&
+        item.shotSize &&
+        isValidGrams(item.grams)
+    );
+
+  if (normalized.length !== loaded.length) {
+    saveAmmoTypes(normalized);
+  }
+
+  return normalized;
 }
 
 function saveAmmoTypes(ammoTypes) {
@@ -85,7 +112,7 @@ function addAmmoType(ammoType) {
       item.ammoName === ammoType.ammoName &&
       item.caliber === ammoType.caliber &&
       item.shotSize === ammoType.shotSize &&
-      Number(item.grams) === Number(ammoType.grams)
+      Math.abs(Number(item.grams) - Number(ammoType.grams)) < GRAMS_COMPARISON_EPSILON
   );
 
   if (duplicated) {
@@ -177,10 +204,20 @@ function formatDateForInput() {
 
 function sortedAmmoTypes(ammoTypes) {
   return [...ammoTypes].sort((a, b) => {
-    if (a.caliber !== b.caliber) return a.caliber.localeCompare(b.caliber, "ja");
-    if (a.ammoName !== b.ammoName) return a.ammoName.localeCompare(b.ammoName, "ja");
+    const caliberA = String(a.caliber ?? "");
+    const caliberB = String(b.caliber ?? "");
+    const ammoNameA = String(a.ammoName ?? "");
+    const ammoNameB = String(b.ammoName ?? "");
+
+    if (caliberA !== caliberB) return caliberA.localeCompare(caliberB, "ja");
+    if (ammoNameA !== ammoNameB) return ammoNameA.localeCompare(ammoNameB, "ja");
     return Number(a.grams) - Number(b.grams);
   });
+}
+
+function findAmmoTypeById(ammoTypeId) {
+  if (!ammoTypeId) return null;
+  return loadAmmoTypes().find((ammoType) => ammoType.id === ammoTypeId) || null;
 }
 
 function createCell(label, value) {
@@ -200,7 +237,11 @@ function createEmptyCell(colspan, message) {
 
 function renderAmmoTypeOptions(ammoTypes, selectedAmmoTypeId = "") {
   const sorted = sortedAmmoTypes(ammoTypes);
-  ammoTypeSelect.innerHTML = '<option value="">選択しない（手入力）</option>';
+  ammoTypeSelect.innerHTML = "";
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "選択しない（手入力）";
+  ammoTypeSelect.appendChild(defaultOption);
 
   for (const ammoType of sorted) {
     const option = document.createElement("option");
@@ -321,7 +362,7 @@ function refreshUi(selectedAmmoTypeId = "") {
 function fillRecordFieldsByAmmoType(ammoTypeId) {
   if (!ammoTypeId) return;
 
-  const selected = loadAmmoTypes().find((ammoType) => ammoType.id === ammoTypeId);
+  const selected = findAmmoTypeById(ammoTypeId);
   if (!selected) return;
 
   document.getElementById("ammoName").value = selected.ammoName;
@@ -343,7 +384,7 @@ ammoTypeForm.addEventListener("submit", (event) => {
   };
 
   const hasRequiredTextFields = Boolean(ammoType.ammoName && ammoType.caliber && ammoType.shotSize);
-  const hasValidGrams = !Number.isNaN(ammoType.grams) && ammoType.grams >= 0;
+  const hasValidGrams = isValidGrams(ammoType.grams);
 
   if (!hasRequiredTextFields || !hasValidGrams) {
     alert("装弾種類の必須項目を正しく入力してください。");
@@ -395,7 +436,7 @@ form.addEventListener("submit", (event) => {
   let grams = Number(formData.get("grams"));
 
   if (selectedAmmoTypeId) {
-    const selected = loadAmmoTypes().find((ammoType) => ammoType.id === selectedAmmoTypeId);
+    const selected = findAmmoTypeById(selectedAmmoTypeId);
     if (!selected) {
       alert("選択した装弾種類が見つかりません。再選択してください。");
       refreshUi();
@@ -422,7 +463,7 @@ form.addEventListener("submit", (event) => {
   };
 
   const hasRequiredTextFields = Boolean(record.date && record.ammoName && record.caliber && record.shotSize);
-  const hasValidGrams = !Number.isNaN(record.grams) && record.grams >= 0;
+  const hasValidGrams = isValidGrams(record.grams);
 
   if (!hasRequiredTextFields || !hasValidGrams) {
     alert("必須項目を正しく入力してください。");
